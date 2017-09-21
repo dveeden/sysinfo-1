@@ -18,6 +18,7 @@ type SysInfo struct {
 	CPU     CPU             `json:"cpu"`
 	Memory  Memory          `json:"memory"`
 	Storage []StorageDevice `json:"storage,omitempty"`
+	LVM     []LogicalVolume `json:"lvm,omitempty"`
 	Network []NetworkDevice `json:"network,omitempty"`
 }
 
@@ -39,5 +40,6 @@ func (si *SysInfo) GetSysInfo() {
 	si.getCPUInfo()
 	si.getMemoryInfo()
 	si.getStorageInfo()
+	si.getLVMInfo()
 	si.getNetworkInfo()
 }
