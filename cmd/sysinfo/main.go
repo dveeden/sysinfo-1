@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/zcalusic/sysinfo"
+	"github.com/AstroProfundis/sysinfo"
 )
 
 func main() {
