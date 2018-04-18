@@ -1,15 +1,17 @@
 # Sysinfo
 
-[![Build Status](https://travis-ci.org/zcalusic/sysinfo.svg?branch=master)](https://travis-ci.org/zcalusic/sysinfo)
-[![Go Report Card](https://goreportcard.com/badge/github.com/zcalusic/sysinfo)](https://goreportcard.com/report/github.com/zcalusic/sysinfo)
-[![GoDoc](https://godoc.org/github.com/zcalusic/sysinfo?status.svg)](https://godoc.org/github.com/zcalusic/sysinfo)
-[![License](https://img.shields.io/badge/license-MIT-a31f34.svg?maxAge=2592000)](https://github.com/zcalusic/sysinfo/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/AstroProfundis/sysinfo.svg?branch=master)](https://travis-ci.org/AstroProfundis/sysinfo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AstroProfundis/sysinfo)](https://goreportcard.com/report/github.com/AstroProfundis/sysinfo)
+[![GoDoc](https://godoc.org/github.com/AstroProfundis/sysinfo?status.svg)](https://godoc.org/github.com/AstroProfundis/sysinfo)
+[![License](https://img.shields.io/badge/license-MIT-a31f34.svg?maxAge=2592000)](https://github.com/AstroProfundis/sysinfo/blob/master/LICENSE)
 [![Powered by](https://img.shields.io/badge/powered_by-Go-5272b4.svg?maxAge=2592000)](https://golang.org/)
 [![Platform](https://img.shields.io/badge/platform-Linux-009bde.svg?maxAge=2592000)](https://www.linuxfoundation.org/)
 
 Package sysinfo is a pure Go library providing Linux OS / kernel / hardware system information. It's completely
 standalone, has no dependencies on the host system, doesn't execute external programs, doesn't even import other Go
 libraries. It collects only "inventory type" information, things that don't change often.
+
+This repo is a fork from [zcalusic](https://github.com/zcalusic/sysinfo) with custom modifications.
 
 ## Code Example
 
@@ -21,7 +23,7 @@ import (
         "fmt"
         "log"
 
-        "github.com/zcalusic/sysinfo"
+        "github.com/AstroProfundis/sysinfo"
 )
 
 func main() {
@@ -75,7 +77,7 @@ It heavily depends on Linux internals, so there are no plans to support other op
 Just use go get.
 
 ```
-go get github.com/zcalusic/sysinfo
+go get github.com/AstroProfundis/sysinfo
 ```
 
 There's also a very simple utility demonstrating sysinfo library capabilities. Start it (as the superuser) to get pretty
@@ -83,7 +85,7 @@ formatted JSON output of all the info that sysinfo library provides. Due to its 
 utility also doubles down as an example of how to use the library.
 
 ```
-go get github.com/zcalusic/sysinfo/cmd/sysinfo
+go get github.com/AstroProfundis/sysinfo/cmd/sysinfo
 ```
 
 ## Sample output
