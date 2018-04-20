@@ -7,7 +7,6 @@ package sysinfo
 
 // SysInfo struct encapsulates all other information structs.
 type SysInfo struct {
-	Meta    Meta            `json:"sysinfo"`
 	Node    Node            `json:"node"`
 	OS      OS              `json:"os"`
 	Kernel  Kernel          `json:"kernel"`
@@ -23,9 +22,6 @@ type SysInfo struct {
 
 // GetSysInfo gathers all available system information.
 func (si *SysInfo) GetSysInfo() {
-	// Meta info
-	si.getMetaInfo()
-
 	// Software info
 	si.getNodeInfo()
 	si.getOSInfo()
