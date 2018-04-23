@@ -10,6 +10,7 @@ type SysInfo struct {
 	Node    Node            `json:"node"`
 	OS      OS              `json:"os"`
 	Kernel  Kernel          `json:"kernel"`
+	NTP     TimeStat        `json:"ntp"`
 	Product Product         `json:"product"`
 	Board   Board           `json:"board"`
 	Chassis Chassis         `json:"chassis"`
@@ -26,6 +27,7 @@ func (si *SysInfo) GetSysInfo() {
 	si.getNodeInfo()
 	si.getOSInfo()
 	si.getKernelInfo()
+	si.getNTPInfo()
 
 	// Hardware info
 	si.getProductInfo()
