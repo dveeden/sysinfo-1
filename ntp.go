@@ -26,8 +26,10 @@ type TimeStat struct {
 func (si *SysInfo) getNTPInfo() {
 	syncd, err := exec.LookPath("ntpq")
 	if err != nil {
-		log.Fatal(err)
+		si.NTP.Ver = err.Error()
+		return
 	}
+
 	cmd := exec.Command(syncd, "-c rv")
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -35,6 +37,7 @@ func (si *SysInfo) getNTPInfo() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	// set default sync status to false
 	si.NTP.Sync = "none"
 
