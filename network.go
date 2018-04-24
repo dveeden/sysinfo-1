@@ -121,11 +121,7 @@ func (si *SysInfo) getNetworkInfo() {
 
 		// get IP Address(es) of interface
 		inet, _ := net.InterfaceByName(link.Name())
-		inet_addrs, _ := inet.Addrs()
-		ip_addrs := make([]string, 0)
-		for _, addr := range inet_addrs {
-			ip_addrs = append(ip_addrs, addr.String())
-		}
+		ip_addrs, _ := getIPAddrByInterface(inet)
 
 		device := NetworkDevice{
 			Name:       link.Name(),
@@ -142,4 +138,16 @@ func (si *SysInfo) getNetworkInfo() {
 
 		si.Network = append(si.Network, device)
 	}
+}
+
+func getIPAddrByInterface(inet *net.Interface) ([]string, error) {
+	ip_addrs := make([]string, 0)
+	addrs, err := inet.Addrs()
+	if err != nil {
+		return ip_addrs, err
+	}
+	for _, addr := range addrs {
+		ip_addrs = append(ip_addrs, addr.String())
+	}
+	return ip_addrs, err
 }
