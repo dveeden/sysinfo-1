@@ -15,12 +15,12 @@ import (
 )
 
 type TimeStat struct {
-	Ver     string  `json:"version"`
-	Sync    string  `json:"sync"`
-	Stratum int     `json:"stratum"`
-	Offset  float64 `json:"offset"`
-	Jitter  float64 `json:"jitter"`
-	Status  string  `json:"status"`
+	Ver     string  `json:"version,omitempty"`
+	Sync    string  `json:"sync,omitempty"`
+	Stratum int     `json:"stratum,omitempty"`
+	Offset  float64 `json:"offset,omitempty"`
+	Jitter  float64 `json:"jitter,omitempty"`
+	Status  string  `json:"status,omitempty"`
 }
 
 func (si *SysInfo) getNTPInfo() {
