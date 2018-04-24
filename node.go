@@ -87,6 +87,9 @@ func (si *SysInfo) getTimezone() {
 				if strings.HasPrefix(tzfile, "/usr/share/zoneinfo/") {
 					si.Node.Timezone = strings.TrimPrefix(tzfile, "/usr/share/zoneinfo/")
 					return
+				} else if strings.HasPrefix(tzfile, "../usr/share/zoneinfo/") {
+					si.Node.Timezone = strings.TrimPrefix(tzfile, "../usr/share/zoneinfo/")
+					return
 				}
 			}
 		}
