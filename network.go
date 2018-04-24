@@ -112,8 +112,8 @@ func (si *SysInfo) getNetworkInfo() {
 			continue
 		}
 
-		if strings.HasPrefix(dev, "../../devices/virtual/") {
-			// skip virtual devices, e.g. lo
+		if strings.HasPrefix(dev, "../../devices/virtual/net/lo") ||
+			strings.HasPrefix(dev, "../../devices/virtual/net/dummy") {
 			continue
 		}
 
