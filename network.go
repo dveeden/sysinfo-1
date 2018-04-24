@@ -6,6 +6,7 @@ package sysinfo
 
 import (
 	"io/ioutil"
+	"net"
 	"os"
 	"path"
 	"strings"
@@ -15,11 +16,13 @@ import (
 
 // NetworkDevice information.
 type NetworkDevice struct {
-	Name       string `json:"name,omitempty"`
-	Driver     string `json:"driver,omitempty"`
-	MACAddress string `json:"macaddress,omitempty"`
-	Port       string `json:"port,omitempty"`
-	Speed      uint   `json:"speed,omitempty"` // device max supported speed in Mbps
+	Name       string   `json:"name,omitempty"`
+	Driver     string   `json:"driver,omitempty"`
+	MACAddress string   `json:"macaddress,omitempty"`
+	IPAddress  []string `json:"ipaddress,omitempty"`
+	Port       string   `json:"port,omitempty"`
+	Speed      uint     `json:"speed,omitempty"` // device max supported speed in Mbps
+	MTU        int      `json:"mtu,omitempty"`
 }
 
 func getPortType(supp uint32) (port string) {
@@ -110,16 +113,27 @@ func (si *SysInfo) getNetworkInfo() {
 		}
 
 		if strings.HasPrefix(dev, "../../devices/virtual/") {
+			// skip virtual devices, e.g. lo
 			continue
 		}
 
 		supp := getSupported(link.Name())
 
+		// get IP Address(es) of interface
+		inet, _ := net.InterfaceByName(link.Name())
+		inet_addrs, _ := inet.Addrs()
+		ip_addrs := make([]string, 0)
+		for _, addr := range inet_addrs {
+			ip_addrs = append(ip_addrs, addr.String())
+		}
+
 		device := NetworkDevice{
 			Name:       link.Name(),
 			MACAddress: slurpFile(path.Join(fullpath, "address")),
+			IPAddress:  ip_addrs,
 			Port:       getPortType(supp),
 			Speed:      getMaxSpeed(supp),
+			MTU:        inet.MTU,
 		}
 
 		if driver, err := os.Readlink(path.Join(fullpath, "device", "driver")); err == nil {
