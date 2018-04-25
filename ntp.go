@@ -30,7 +30,7 @@ func (si *SysInfo) getNTPInfo() {
 		return
 	}
 
-	cmd := exec.Command(syncd, "-c rv")
+	cmd := exec.Command(syncd, "-c rv", "127.0.0.1")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err = cmd.Run()
