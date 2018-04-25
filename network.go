@@ -6,6 +6,7 @@ package sysinfo
 
 import (
 	"io/ioutil"
+	"net"
 	"os"
 	"path"
 	"strings"
@@ -15,11 +16,13 @@ import (
 
 // NetworkDevice information.
 type NetworkDevice struct {
-	Name       string `json:"name,omitempty"`
-	Driver     string `json:"driver,omitempty"`
-	MACAddress string `json:"macaddress,omitempty"`
-	Port       string `json:"port,omitempty"`
-	Speed      uint   `json:"speed,omitempty"` // device max supported speed in Mbps
+	Name       string   `json:"name,omitempty"`
+	Driver     string   `json:"driver,omitempty"`
+	MACAddress string   `json:"macaddress,omitempty"`
+	IPAddress  []string `json:"ipaddress,omitempty"`
+	Port       string   `json:"port,omitempty"`
+	Speed      uint     `json:"speed,omitempty"` // device max supported speed in Mbps
+	MTU        int      `json:"mtu,omitempty"`
 }
 
 func getPortType(supp uint32) (port string) {
@@ -109,17 +112,24 @@ func (si *SysInfo) getNetworkInfo() {
 			continue
 		}
 
-		if strings.HasPrefix(dev, "../../devices/virtual/") {
+		if strings.HasPrefix(dev, "../../devices/virtual/net/lo") ||
+			strings.HasPrefix(dev, "../../devices/virtual/net/dummy") {
 			continue
 		}
 
 		supp := getSupported(link.Name())
 
+		// get IP Address(es) of interface
+		inet, _ := net.InterfaceByName(link.Name())
+		ip_addrs, _ := getIPAddrByInterface(inet)
+
 		device := NetworkDevice{
 			Name:       link.Name(),
 			MACAddress: slurpFile(path.Join(fullpath, "address")),
+			IPAddress:  ip_addrs,
 			Port:       getPortType(supp),
 			Speed:      getMaxSpeed(supp),
+			MTU:        inet.MTU,
 		}
 
 		if driver, err := os.Readlink(path.Join(fullpath, "device", "driver")); err == nil {
@@ -128,4 +138,16 @@ func (si *SysInfo) getNetworkInfo() {
 
 		si.Network = append(si.Network, device)
 	}
+}
+
+func getIPAddrByInterface(inet *net.Interface) ([]string, error) {
+	ip_addrs := make([]string, 0)
+	addrs, err := inet.Addrs()
+	if err != nil {
+		return ip_addrs, err
+	}
+	for _, addr := range addrs {
+		ip_addrs = append(ip_addrs, addr.String())
+	}
+	return ip_addrs, err
 }

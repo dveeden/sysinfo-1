@@ -24,3 +24,7 @@ func slurpFile(path string) string {
 func spewFile(path string, data string, perm os.FileMode) {
 	_ = ioutil.WriteFile(path, []byte(data+"\n"), perm)
 }
+
+func SlurpFile(path string) string {
+	return slurpFile(path)
+}
