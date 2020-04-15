@@ -158,6 +158,9 @@ func (si *SysInfo) getMemoryInfo() {
 			si.Memory.Type = "DRAM"
 			size, _ := strconv.ParseUint(targetKB, 10, 64)
 			si.Memory.Size = uint(size) / 1024
+		} else if memInfo := slurpFile("/proc/meminfo"); memInfo != "" {
+			size := parseMemSize(memInfo)
+			si.Memory.Size = uint(size) / 1024
 		}
 		return
 	}

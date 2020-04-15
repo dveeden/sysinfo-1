@@ -7,6 +7,7 @@ package sysinfo
 import (
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -27,4 +28,16 @@ func spewFile(path string, data string, perm os.FileMode) {
 
 func SlurpFile(path string) string {
 	return slurpFile(path)
+}
+
+func parseMemSize(memInfo string) uint64 {
+	for _, line := range strings.Split(memInfo, "\n") {
+		if !strings.Contains(line, "MemTotal") {
+			continue
+		}
+		fields := strings.Fields(line)
+		size, _ := strconv.ParseUint(fields[1], 10, 64)
+		return size
+	}
+	return 0
 }
