@@ -16,13 +16,14 @@ import (
 
 // CPU information.
 type CPU struct {
-	Vendor  string `json:"vendor,omitempty"`
-	Model   string `json:"model,omitempty"`
-	Speed   uint   `json:"speed,omitempty"`   // CPU clock rate in MHz
-	Cache   uint   `json:"cache,omitempty"`   // CPU cache size in KB
-	Cpus    uint   `json:"cpus,omitempty"`    // number of physical CPUs
-	Cores   uint   `json:"cores,omitempty"`   // number of physical CPU cores
-	Threads uint   `json:"threads,omitempty"` // number of logical (HT) CPU cores
+	Vendor   string `json:"vendor,omitempty"`
+	Model    string `json:"model,omitempty"`
+	Speed    uint   `json:"speed,omitempty"`    // CPU clock rate in MHz
+	Cache    uint   `json:"cache,omitempty"`    // CPU cache size in KB
+	Cpus     uint   `json:"cpus,omitempty"`     // number of physical CPUs
+	Cores    uint   `json:"cores,omitempty"`    // number of physical CPU cores
+	Threads  uint   `json:"threads,omitempty"`  // number of logical (HT) CPU cores
+	Governor string `json:"governor,omitempty"` // CPU frequency governor
 }
 
 var (
@@ -88,4 +89,10 @@ func (si *SysInfo) getCPUInfo() {
 
 	si.CPU.Cpus = uint(len(cpu))
 	si.CPU.Cores = uint(len(core))
+	si.CPU.Governor = getCPUGov()
+}
+
+// getCPUGov only works for physical processors
+func getCPUGov() string {
+	return slurpFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor")
 }
