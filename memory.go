@@ -21,6 +21,7 @@ type Memory struct {
 	Type  string `json:"type,omitempty"`
 	Speed uint   `json:"speed,omitempty"` // RAM data rate in MT/s
 	Size  uint   `json:"size,omitempty"`  // RAM size in MB
+	Swap  uint   `json:"size,omitempty"`  // Swap size in MB
 }
 
 const epsSize = 0x1f
@@ -152,14 +153,19 @@ func getStructureTable() ([]byte, error) {
 }
 
 func (si *SysInfo) getMemoryInfo() {
+	memInfo := slurpFile("/proc/meminfo")
+	if memInfo != "" {
+		memSize := parseMemSize(memInfo)
+		swapSize := parseSwapSize(memInfo)
+		si.Memory.Size = uint(memSize) / 1024
+		si.Memory.Swap = uint(swapSize) / 1024
+	}
+
 	mem, err := getStructureTable()
 	if err != nil {
 		if targetKB := slurpFile("/sys/devices/system/xen_memory/xen_memory0/target_kb"); targetKB != "" {
 			si.Memory.Type = "DRAM"
 			size, _ := strconv.ParseUint(targetKB, 10, 64)
-			si.Memory.Size = uint(size) / 1024
-		} else if memInfo := slurpFile("/proc/meminfo"); memInfo != "" {
-			size := parseMemSize(memInfo)
 			si.Memory.Size = uint(size) / 1024
 		}
 		return

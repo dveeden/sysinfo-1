@@ -41,3 +41,15 @@ func parseMemSize(memInfo string) uint64 {
 	}
 	return 0
 }
+
+func parseSwapSize(memInfo string) uint64 {
+	for _, line := range strings.Split(memInfo, "\n") {
+		if !strings.Contains(line, "SwapTotal") {
+			continue
+		}
+		fields := strings.Fields(line)
+		size, _ := strconv.ParseUint(fields[1], 10, 64)
+		return size
+	}
+	return 0
+}
