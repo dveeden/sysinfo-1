@@ -21,7 +21,7 @@ type Memory struct {
 	Type  string `json:"type,omitempty"`
 	Speed uint   `json:"speed,omitempty"` // RAM data rate in MT/s
 	Size  uint   `json:"size,omitempty"`  // RAM size in MB
-	Swap  uint   `json:"size,omitempty"`  // Swap size in MB
+	Swap  uint   `json:"swap,omitempty"`  // Swap size in MB
 }
 
 const epsSize = 0x1f
@@ -153,10 +153,10 @@ func getStructureTable() ([]byte, error) {
 }
 
 func (si *SysInfo) getMemoryInfo() {
-	memInfo := slurpFile("/proc/meminfo")
-	if memInfo != "" {
-		memSize := parseMemSize(memInfo)
-		swapSize := parseSwapSize(memInfo)
+	memInfo, err := ioutil.ReadFile("/proc/meminfo")
+	if err == nil && len(memInfo) > 0 {
+		memSize := parseMemSize("MemTotal", string(memInfo))
+		swapSize := parseMemSize("SwapTotal", string(memInfo))
 		si.Memory.Size = uint(memSize) / 1024
 		si.Memory.Swap = uint(swapSize) / 1024
 	}
