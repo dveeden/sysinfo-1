@@ -36,7 +36,10 @@ func parseMemSize(key, memInfo string) uint64 {
 			continue
 		}
 		fields := strings.Fields(line)
-		size, _ := strconv.ParseUint(fields[1], 10, 64)
+		size, err := strconv.ParseUint(fields[1], 10, 64)
+		if err != nil {
+			return 0
+		}
 		return size
 	}
 	return 0

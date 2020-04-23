@@ -2,15 +2,9 @@
 //
 // Use of this source code is governed by an MIT-style license that can be found in the LICENSE file.
 
-// +build !darwin,!windows
+// +build darwin
 
 package sysinfo
-
-import (
-	"strings"
-	"syscall"
-	"unsafe"
-)
 
 // Kernel information.
 type Kernel struct {
@@ -23,10 +17,13 @@ func (si *SysInfo) getKernelInfo() {
 	si.Kernel.Release = slurpFile("/proc/sys/kernel/osrelease")
 	si.Kernel.Version = slurpFile("/proc/sys/kernel/version")
 
-	var uname syscall.Utsname
-	if err := syscall.Uname(&uname); err != nil {
-		return
-	}
+	/*
+		// Uname() and Utsname is not defined in syscall for darwin
+		var uname syscall.Utsname
+		if err := syscall.Uname(&uname); err != nil {
+			return
+		}
 
-	si.Kernel.Architecture = strings.TrimRight(string((*[65]byte)(unsafe.Pointer(&uname.Machine))[:]), "\000")
+		si.Kernel.Architecture = strings.TrimRight(string((*[65]byte)(unsafe.Pointer(&uname.Machine))[:]), "\000")
+	*/
 }
