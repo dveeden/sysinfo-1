@@ -14,7 +14,7 @@ matrix:
 branches:
   only:
     - master
-    - tidb-insight
+    - tiup
 
 notifications:
   email:
