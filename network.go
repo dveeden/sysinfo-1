@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -98,6 +99,22 @@ func getSupported(name string) uint32 {
 	return 0
 }
 
+// readIfaceSpeed reads /sys/class/net/<iface>/speed
+// inspired by https://github.com/prometheus/procfs/blob/master/sysfs/net_class.go#L56
+func readIfaceSpeed(file string) (speed uint) {
+	f, err := os.Open(file)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	if b, err := ioutil.ReadAll(f); err == nil {
+		if s, err := strconv.Atoi(strings.TrimSpace(string(b))); err == nil && s > 0 {
+			speed = uint(s)
+		}
+	}
+	return
+}
+
 func (si *SysInfo) getNetworkInfo() {
 	sysClassNet := "/sys/class/net"
 	devices, err := ioutil.ReadDir(sysClassNet)
@@ -124,12 +141,17 @@ func (si *SysInfo) getNetworkInfo() {
 		inet, _ := net.InterfaceByName(link.Name())
 		ip_addrs, _ := getIPAddrByInterface(inet)
 
+		speed := readIfaceSpeed(path.Join(fullpath, "speed"))
+		if speed == 0 {
+			speed = getMaxSpeed(supp)
+		}
+
 		device := NetworkDevice{
 			Name:       link.Name(),
 			MACAddress: slurpFile(path.Join(fullpath, "address")),
 			IPAddress:  ip_addrs,
 			Port:       getPortType(supp),
-			Speed:      getMaxSpeed(supp),
+			Speed:      speed,
 			MTU:        inet.MTU,
 		}
 
