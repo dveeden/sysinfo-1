@@ -35,13 +35,14 @@ CPE_NAME="cpe:/o:centos:centos:6"
 HOME_URL="https://www.centos.org/"
 BUG_REPORT_URL="https://bugs.centos.org/"`
 
-	rhel6Template = `NAME="Red Hat Enterprise Linux Server"
-VERSION="6.%s %s"
+	redhat6Template = `NAME="Red Hat Enterprise Linux Server"
+VERSION="%s %s"
 ID="rhel"
 ID_LIKE="fedora"
-VERSION_ID="6.%s"
-PRETTY_NAME="Red Hat Enterprise Linux Server 6.%s %s"
+VERSION_ID="%s"
+PRETTY_NAME="Red Hat Enterprise Linux"
 ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:%s:GA:server"
 HOME_URL="https://www.redhat.com/"
 BUG_REPORT_URL="https://bugzilla.redhat.com/"`
 )
@@ -52,9 +53,9 @@ var (
 	reVersionID  = regexp.MustCompile(`^VERSION_ID=(.*)$`)
 	reUbuntu     = regexp.MustCompile(`[\( ]([\d\.]+)`)
 	reCentOS     = regexp.MustCompile(`^CentOS( Linux)? release ([\d\.]+) `)
-	reCentOS6    = regexp.MustCompile(`^CentOS release 6\.\d (.*)`)
-	reRHEL       = regexp.MustCompile(`^Red Hat Enterprise Linux Server release ([\d\.]+) (.*)`)
-	reRHEL6      = regexp.MustCompile(`^Red Hat Enterprise Linux Server release 6\.(\d) (.*)`)
+	reCentOS6    = regexp.MustCompile(`^CentOS release 6\.\d+ (.*)`)
+	reRedhat     = regexp.MustCompile(`[\( ]([\d\.]+)`)
+	reRedhat6    = regexp.MustCompile(`^Red Hat Enterprise Linux Server release (.*) (.*)`)
 )
 
 func genOSRelease() {
@@ -62,12 +63,24 @@ func genOSRelease() {
 	if release := slurpFile("/etc/centos-release"); release != "" {
 		if m := reCentOS6.FindStringSubmatch(release); m != nil {
 			spewFile(osReleaseFile, fmt.Sprintf(centOS6Template, m[1], m[1]), 0666)
+			return
 		}
 	}
+
 	// RHEL 6.x
 	if release := slurpFile("/etc/redhat-release"); release != "" {
-		if m := reRHEL6.FindStringSubmatch(release); m != nil {
-			spewFile(osReleaseFile, fmt.Sprintf(rhel6Template, m[1], m[2], m[1], m[1], m[2]), 0666)
+		if m := reRedhat6.FindStringSubmatch(release); m != nil {
+			version := "6"
+			code_name := "()"
+			switch l := len(m); l {
+			case 3:
+				code_name = m[2]
+				fallthrough
+			case 2:
+				version = m[1]
+			}
+			spewFile(osReleaseFile, fmt.Sprintf(redhat6Template, version, code_name, version, version), 0666)
+			return
 		}
 	}
 }
@@ -116,8 +129,13 @@ func (si *SysInfo) getOSInfo() {
 		}
 	case "rhel":
 		if release := slurpFile("/etc/redhat-release"); release != "" {
-			if m := reRHEL.FindStringSubmatch(release); m != nil {
-				si.OS.Release = m[1] + " " + m[2]
+			if m := reRedhat.FindStringSubmatch(release); m != nil {
+				si.OS.Release = m[1]
+			}
+		}
+		if len(si.OS.Release) == 0 {
+			if m := reRedhat.FindStringSubmatch(si.OS.Name); m != nil {
+				si.OS.Release = m[1]
 			}
 		}
 	}
